@@ -6,7 +6,7 @@
   var KEY_CFG = 'sb.cfg.v1';
   var KEY_DEMO = 'sb.demo.v1';
 
-  var cfg = loadJSON(KEY_CFG, { apiUrl: '', myName: '' });
+  var cfg = loadJSON(KEY_CFG, { apiUrl: '', myName: '박종익' });
   var mode = 'demo';
   var state = null;      // 지금 보고 있는 달
   var demoStore = null;  // 시연 모드의 여러 달 저장소

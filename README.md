@@ -67,6 +67,13 @@ curl -s -X POST 'https://script.google.com/macros/s/XXXX/exec' \
 - 새 달 시트는 `insertSheet` 로 만들고, 지난 달 시트는 수정하지 않습니다.
 - 이미 있는 달 탭에 이월하면 이미 있는 이름은 건너뜁니다(중복 방지).
 
+## 검증
+
+`dev/test.html` 은 실제 `apps-script/Code.gs` 를 가짜 시트(SpreadsheetApp 목) 위에서 실행해
+47개 항목을 확인합니다(2·4·5주 달 인식, 체크 토글, 목표 수정, 연장, 참여자 추가,
+다음 달 생성·이월·중복 방지, JSONP 라우팅). 브라우저에서
+<https://mujusang.github.io/silhaengban/dev/test.html> 을 열면 결과가 나옵니다.
+
 ## 파일
 
 ```
@@ -76,4 +83,5 @@ assets/app.css        스타일(라이트/다크)
 assets/app.js         앱 로직(시연·시트 연결)
 assets/snapshot.js    26년 11월 스냅샷
 apps-script/Code.gs   구글 Apps Script 백엔드
+dev/                  Code.gs 검증 하네스(가짜 시트)
 ```
