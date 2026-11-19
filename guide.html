@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12213f">
+<title>자체 실행반 — 설치 가이드</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  .wrap{max-width:720px;margin:0 auto;padding:18px 16px 60px}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);margin-bottom:12px}
+  .step h2{font-size:15.5px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+  .step .no{width:22px;height:22px;border-radius:7px;background:var(--brand);color:#fff;font-size:12px;display:grid;place-items:center;flex:0 0 auto}
+  .step p,.step li{font-size:13.5px;color:var(--ink-2);line-height:1.6;margin:6px 0}
+  .step ol,.step ul{padding-left:18px;margin:6px 0}
+  .step code{background:var(--bg);padding:1.5px 5px;border-radius:5px;font-size:12.5px;border:1px solid var(--line)}
+  .codebox{position:relative;margin:10px 0}
+  .codebox pre{
+    background:#0f1a2b;color:#d6e4ff;border-radius:12px;padding:13px;overflow:auto;
+    font-size:11.5px;line-height:1.5;max-height:240px;margin:0;
+  }
+  .copy{position:absolute;top:8px;right:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#e8f0ff;border-radius:8px;padding:5px 10px;font-size:11.5px}
+  .note{background:var(--brand-soft);border-radius:12px;padding:12px;font-size:12.5px;color:var(--ink-2);line-height:1.6}
+  .note b{color:var(--ink)}
+  .back{display:inline-block;margin-bottom:14px;font-size:13px;color:var(--ink-2)}
+  h1{font-size:20px;margin-bottom:4px}
+  .sub{font-size:13px;color:var(--ink-3);margin:0 0 16px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0}
+  th,td{border-bottom:1px solid var(--line);padding:7px 6px;text-align:left;vertical-align:top}
+  th{color:var(--ink-3);font-weight:600;font-size:11.5px}
+  td code{font-size:11.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="./">← 실행반 앱으로</a>
+  <h1>설치 가이드</h1>
+  <p class="sub">구글 시트와 연결하면 체크가 시트에 바로 저장됩니다. 시트를 연결하지 않아도 앱은 시연 모드로 모두 동작합니다.</p>
+
+  <div class="step">
+    <h2><span class="no">1</span>시트에서 Apps Script 열기</h2>
+    <p>구글 시트 <b>26년 11월 자체 실행반</b>을 열고, 메뉴에서 <code>확장 프로그램 → Apps Script</code>를 누릅니다.</p>
+    <p>편집기가 열리면 왼쪽 <code>Code.gs</code> 안의 기본 내용을 모두 지웁니다.</p>
+  </div>
+
+  <div class="step">
+    <h2><span class="no">2</span>아래 코드 붙여넣기</h2>
+    <p>아래 <b>전체 복사</b>를 눌러 <code>Code.gs</code>에 붙여넣고 <b>저장</b>(Ctrl+S / ⌘+S)합니다.</p>
+    <div class="codebox">
+      <button class="copy" id="copyBtn">전체 복사</button>
+      <pre id="codePreview">불러오는 중…</pre>
+    </div>
+    <p class="sub" style="margin:0">코드 전문: <a href="apps-script/Code.gs" target="_blank" rel="noopener">apps-script/Code.gs</a></p>
+  </div>
+
+  <div class="step">
+    <h2><span class="no">3</span>웹 앱으로 배포</h2>
+    <ol>
+      <li>오른쪽 위 <b>배포</b> → <b>새 배포</b></li>
+      <li>유형 선택(톱니) → <b>웹 앱</b></li>
+      <li>다음 사용자로 실행: <b>나</b></li>
+      <li>액세스 권한: <b>모든 사용자</b></li>
+      <li><b>배포</b> → 권한 승인 → 나오는 <b>웹 앱 URL</b> 복사</li>
+    </ol>
+    <div class="note">
+      <b>URL은 <code>…/exec</code>로 끝나는 것을 쓰세요.</b> <code>…/dev</code> 주소는 만든 사람만 열 수 있어 실행반 앱이 연결되지 않습니다.
+      코드를 고친 뒤에는 <b>배포 관리 → 수정 → 새 버전</b>으로 다시 배포해야 반영됩니다.
+    </div>
+  </div>
+
+  <div class="step">
+    <h2><span class="no">4</span>앱에 URL 연결</h2>
+    <p>실행반 앱으로 돌아와 오른쪽 위 <b>⚙ 설정</b> → <b>Apps Script 웹앱 URL</b>에 붙여넣고 <b>저장</b>.
+    연결 테스트가 성공하면 상단 배너가 초록색 <b>시트와 연결됨</b>으로 바뀝니다. 이제 체크·목표 수정·참여자 추가·다음 달 이월이 모두 시트에 기록됩니다.</p>
+  </div>
+
+  <div class="step">
+    <h2>앱이 하는 일</h2>
+    <table>
+      <tr><th>동작</th><th>시트에서 일어나는 일</th></tr>
+      <tr><td>주차 동그라미 탭</td><td>해당 주차 칸의 체크박스를 켜고 끕니다. 달성률 수식이 자동 계산됩니다.</td></tr>
+      <tr><td>목표 수정</td><td>목표 내용(달성 가능한 목표 칸)과 총 목표 횟수만 바꿉니다.</td></tr>
+      <tr><td>다음 달도 참여</td><td>연장여부 칸을 켜고 끕니다.</td></tr>
+      <tr><td>참여자 추가</td><td>맨 아래에 새 행을 만들고 달성률 수식·체크박스를 붙입니다.</td></tr>
+      <tr><td>다음 달 이월</td><td>연장여부가 켜진 사람만 <b>26년 12월</b> 탭으로 옮깁니다. 그 달 탭이 없으면 새로 만들고, 지난 달 데이터는 그대로 둡니다.</td></tr>
+    </table>
+    <div class="note">이미 있는 셀의 값과 수식은 덮어쓰지 않습니다. 쓰기는 앱이 실제로 누른 그 칸에만 일어납니다.</div>
+  </div>
+
+  <div class="step">
+    <h2>문제가 생기면</h2>
+    <ul>
+      <li><b>연결 실패</b>: 액세스 권한이 <b>모든 사용자</b>인지, URL이 <code>/exec</code>인지 확인하세요.</li>
+      <li><b>배포 후 코드 수정</b>: 저장만 하면 반영되지 않습니다. <b>새 버전</b>으로 다시 배포하세요.</li>
+      <li><b>다른 시트에 붙일 때</b>: 독립 스크립트로 만들었다면 <code>CONFIG.SPREADSHEET_ID</code>에 시트 ID를 넣습니다.</li>
+      <li><b>API 직접 호출</b>: <code>…/exec?action=ping</code>, <code>?action=get&amp;month=26년 11월</code> 처럼 GET으로 확인할 수 있습니다. 응답은 JSON(또는 <code>callback=</code>을 주면 JSONP)입니다.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var btn = document.getElementById('copyBtn');
+    var pre = document.getElementById('codePreview');
+    fetch('apps-script/Code.gs').then(function (r) { return r.text(); }).then(function (t) {
+      pre.textContent = t;
+      btn.addEventListener('click', function () {
+        var done = function () { btn.textContent = '복사됨 ✓'; setTimeout(function () { btn.textContent = '전체 복사'; }, 1800); };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(t).then(done, function () { fallback(); });
+        } else fallback();
+        function fallback() {
+          var ta = document.createElement('textarea');
+          ta.value = t; document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); done(); } catch (e) { btn.textContent = '복사 실패'; }
+          document.body.removeChild(ta);
+        }
+      });
+    }).catch(function () { pre.textContent = '코드 파일을 불러오지 못했습니다. 위 링크에서 확인하세요.'; });
+  })();
+</script>
+</body>
+</html>
