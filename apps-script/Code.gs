@@ -80,9 +80,10 @@ function respond_(result, callback) {
 /* =====================  시트·레이아웃  ===================== */
 
 function ss_() {
-  if (CONFIG.SPREADSHEET_ID) return SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
+  var id = CONFIG.SPREADSHEET_ID || (PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID') || '');
+  if (id) return SpreadsheetApp.openById(id);
   var active = SpreadsheetApp.getActiveSpreadsheet();
-  if (!active) throw new Error('스프레드시트에 연결되지 않았습니다. CONFIG.SPREADSHEET_ID를 채워 주세요.');
+  if (!active) throw new Error('스프레드시트에 연결되지 않았습니다. CONFIG.SPREADSHEET_ID나 스크립트 속성 SPREADSHEET_ID를 채워 주세요.');
   return active;
 }
 
@@ -343,6 +344,12 @@ function monthInfo_(title) {
   };
 }
 
+function carryTotal_(total, weeks) {
+  var t = parseInt(total, 10);
+  if (!t || t <= 0) return weeks;
+  return Math.min(t, weeks);
+}
+
 function rolloverPreview_(month) {
   var sheet = sheetByMonth_(month);
   var L = layout_(sheet);
@@ -358,7 +365,7 @@ function rolloverPreview_(month) {
     exists: !!targetSheet,
     period: info.period,
     weeks: info.weeks,
-    members: carried.map(function (m) { return { name: m.name, goal: m.goal, total: m.total || info.weeks }; })
+    members: carried.map(function (m) { return { name: m.name, goal: m.goal, total: carryTotal_(m.total, info.weeks) }; })
   };
 }
 
@@ -398,7 +405,7 @@ function rollover_(month, confirm) {
   for (var k = 0; k < carried.length; k++) {
     var m = carried[k];
     if (existing[m.name]) continue;
-    var total = m.total > 0 ? m.total : L.weeks.length;
+    var total = carryTotal_(m.total, L.weeks.length);
     targetSheet.getRange(row, L.name).setValue(m.name);
     targetSheet.getRange(row, L.goal).setValue(m.goal || '');
     targetSheet.getRange(row, L.total).setValue(total);

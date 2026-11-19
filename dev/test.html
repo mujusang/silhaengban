@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Code.gs 검증</title>
+<style>
+  body{font-family:-apple-system,"Apple SDGothic Neo",sans-serif;margin:0;padding:16px;background:#f6f8fb;color:#12213f}
+  h1{font-size:17px;margin:0 0 12px}
+  #sum{font-size:14px;font-weight:700;margin-bottom:12px}
+  .ok{color:#0b7a4b}.ng{color:#b3261e}
+  ol{padding-left:22px;font-size:13px;line-height:1.7}
+  li div{font-size:12px;color:#5a6a85;white-space:pre-wrap}
+  pre{background:#0f1a2b;color:#d6e4ff;padding:10px;border-radius:8px;font-size:11px;overflow:auto}
+</style>
+</head>
+<body>
+<h1>Code.gs 검증 (가짜 시트)</h1>
+<div id="sum">실행 중…</div>
+<ol id="out"></ol>
+<pre id="detail"></pre>
+<script src="mock-gas.js"></script>
+<script>
+(async function () {
+  var results = [];
+  function load(url) {
+    return fetch(url).then(function (r) { return r.text(); });
+  }
+  var code = await load('../apps-script/Code.gs?' + Date.now());
+  (0, eval)(code);   // Code.gs 를 전역 스코프에서 실행
+
+  function assert(name, cond, detail) {
+    results.push({ name: name, pass: !!cond, detail: detail || '' });
+  }
+
+  /* ---------- 가짜 시트 만들기 ---------- */
+  function buildMonth(ss, title, headerRow1, header2, rows) {
+    var sh = ss.addSheet(title);
+    sh.setAt(1, 1, '  ');
+    for (var c = 0; c < headerRow1.length; c++) {
+      if (headerRow1[c] !== undefined && headerRow1[c] !== null && headerRow1[c] !== '')
+        sh.setAt(1, c + 1, headerRow1[c]);
+    }
+    for (var c2 = 0; c2 < header2.length; c2++) sh.setAt(2, c2 + 1, header2[c2]);
+    for (var r = 0; r < rows.length; r++) {
+      for (var c3 = 0; c3 < rows[r].length; c3++) {
+        var v = rows[r][c3];
+        if (v === undefined) continue;
+        if (typeof v === 'string' && v.charAt(0) === '=') sh.setFormulaAt(r + 3, c3 + 1, v);
+        else sh.setAt(r + 3, c3 + 1, v);
+      }
+    }
+    return sh;
+  }
+
+  function rateF(row, lastCol) {
+    return '=IFERROR((COUNTIF(E' + row + ':' + lastCol + row + ', true) / C' + row + '),"-")';
+  }
+
+  var ss = window.__MOCK__.create('test-sheet-id', '26년 11월 자체 실행반');
+
+  buildMonth(ss, '26년 11월',
+    [null, null, null, null, '기간 (11/1 ~ 11/29)', null, null, null, null, '12월'],
+    ['이름', '달성 가능한 목표로 각자 설정', '11월 총 목표', '달성률', '1주', '2주', '3주', '4주', '5주', '연장여부'],
+    [
+      ['이홍규', '블로그 포스팅 2회', 5, rateF(3, 'I'), true, true, false, false, false, true],
+      ['박종익', '', 5, rateF(4, 'H'), false, false, false, false, false, false],
+      ['이성윤 ', '', 5, rateF(5, 'H'), false, false, false, false, false, false],
+      ['박경화', '블로그 1회', 5, rateF(6, 'H'), true, true, false, false, false, false],
+      ['김일동', '', 5, rateF(7, 'H'), false, false, false, false, false, false],
+      ['김희련', '', 5, rateF(8, 'H'), false, false, false, false, false, false],
+      ['김선옥', '', 5, rateF(9, 'H'), false, false, false, false, false, false],
+      ['권오준', '', 5, rateF(10, 'H'), false, false, false, false, false, false],
+      ['이소영', '', 5, rateF(11, 'H'), false, false, false, false, false, false],
+      ['이영주', '', 5, rateF(12, 'H'), false, false, false, false, false, false],
+      ['김은정', '', 5, rateF(13, 'H'), false, false, false, false, false, false]
+    ]);
+
+  /* 4주 달: 연장여부가 I열 */
+  buildMonth(ss, '26년 10월',
+    [null, null, null, null, '기간 (10/1 ~ 10/31)', null, null, null, '11월'],
+    ['이름', '달성 가능한 목표로 각자 설정', '10월 총 목표', '달성률', '1주', '2주', '3주', '4주', '연장여부'],
+    [
+      ['이홍규', '블로그 포스팅 2회', 4, rateF(3, 'H'), true, true, true, true, true],
+      ['박종익', '매주 유튜브 1개, 블로그 1개', 4, rateF(4, 'H'), true, true, true, true, true],
+      ['김은정', '3째주부터 블로그1회', 2, rateF(5, 'H'), false, false, true, false, true]
+    ]);
+
+  /* 옛 달: 뒤에 차감액·배분액 열이 더 있는 경우 */
+  buildMonth(ss, '25년 12월',
+    [null, null, null, null, '기간 (12/1~12/28)', null, null, null, '1월'],
+    ['이름', '목표: 최소 주 1회', '12월 총 목표 횟수', '달성률', '1주', '2주', '3주', '4주', '연장여부', '차감액', '차감액', '배분액'],
+    [
+      ['１.이홍규', '릴스 1회', 4, rateF(3, 'H'), true, true, true, true, true, '', '', ''],
+      ['2. 박종익', '유튜브1회. 블로그1회', 4, rateF(4, 'H'), true, true, true, true, true, '', '', '']
+    ]);
+
+  /* ---------- 1. 읽기 ---------- */
+  var d1 = monthData_('26년 11월');
+  assert('11월: 주차 5개 인식', d1.weeks === 5, 'weeks=' + d1.weeks);
+  assert('11월: 기간 문구', d1.period === '기간 (11/1 ~ 11/29)', d1.period);
+  assert('11월: 다음 달 라벨', d1.nextLabel === '12월', d1.nextLabel);
+  assert('11월: 참가자 11명', d1.members.length === 11, 'n=' + d1.members.length);
+  assert('11월: 달성률(이홍규 2/5)', Math.abs(d1.members[0].rate - 0.4) < 1e-9, 'rate=' + d1.members[0].rate);
+  assert('11월: 연장여부(이홍규)', d1.members[0].renew === true);
+  assert('11월: 공백 이름(이성윤 ) 정리', d1.members[2].name === '이성윤', '[' + d1.members[2].name + ']');
+
+  var d2 = monthData_('26년 10월');
+  assert('10월: 주차 4개 인식', d2.weeks === 4, 'weeks=' + d2.weeks);
+  assert('10월: 연장여부 열 자동 탐지', d2.members[0].renew === true && d2.members[0].checks.length === 4);
+  assert('10월: 총 목표 2 예외 유지', d2.members[2].total === 2, 'total=' + d2.members[2].total);
+  assert('10월: 달성률 1/2', Math.abs(d2.members[2].rate - 0.5) < 1e-9, 'rate=' + d2.members[2].rate);
+
+  var d3 = monthData_('25년 12월');
+  assert('옛 달(차감액 열): 주차 4개', d3.weeks === 4, 'weeks=' + d3.weeks);
+  assert('옛 달: 참가자 2명', d3.members.length === 2);
+  assert('옛 달: 다음 달 라벨(1월)', d3.nextLabel === '1월', d3.nextLabel);
+
+  /* ---------- 2. 체크 토글 ---------- */
+  var t = toggleCheck_('26년 11월', '박종익', 1);
+  var me = t.members.filter(function (m) { return m.name === '박종익'; })[0];
+  assert('토글: 켜짐', me.checks[0] === true && Math.abs(me.rate - 0.2) < 1e-9, 'rate=' + me.rate);
+  var t2 = toggleCheck_('26년 11월', '박종익', 1);
+  var me2 = t2.members.filter(function (m) { return m.name === '박종익'; })[0];
+  assert('토글: 다시 꺼짐', me2.checks[0] === false && me2.rate === 0, 'rate=' + me2.rate);
+  var threw = false;
+  try { toggleCheck_('26년 11월', '박종익', 9); } catch (e) { threw = true; }
+  assert('토글: 범위 밖 주차는 오류', threw);
+
+  /* ---------- 3. 목표 수정 ---------- */
+  var g = updateGoal_('26년 11월', '박종익', '매주 유튜브 1개, 블로그 1개', 3);
+  var gm = g.members.filter(function (m) { return m.name === '박종익'; })[0];
+  var sh11 = ss.getSheetByName('26년 11월');
+  assert('목표 수정: 문구', gm.goal === '매주 유튜브 1개, 블로그 1개', gm.goal);
+  assert('목표 수정: 총 목표', gm.total === 3, 'total=' + gm.total);
+  assert('목표 수정: 시트 B열 반영', sh11.valueAt(4, 2) === '매주 유튜브 1개, 블로그 1개');
+  assert('목표 수정: 기존 달성률 수식 유지', sh11.formulaAt(4, 4).indexOf('C4') > 0, sh11.formulaAt(4, 4));
+
+  /* ---------- 4. 연장 토글 ---------- */
+  var rn = setRenew_('26년 11월', '박종익', 'true');
+  var rnm = rn.members.filter(function (m) { return m.name === '박종익'; })[0];
+  assert('연장: 켜기', rnm.renew === true);
+  assert('연장: 시트 반영', sh11.valueAt(4, 10) === true);
+
+  /* ---------- 5. 참가자 추가 ---------- */
+  var add = addMember_('26년 11월', '신규 참가자', '블로그 주 1회', '');
+  var newbie = add.members.filter(function (m) { return m.name === '신규 참가자'; })[0];
+  assert('추가: 목록에 등장', !!newbie, 'n=' + add.members.length);
+  assert('추가: 기본 총 목표=주차 수', newbie && newbie.total === 5, newbie && newbie.total);
+  assert('추가: 체크 전부 꺼짐', newbie && newbie.checks.length === 5 && newbie.checks.every(function (x) { return x === false; }));
+  assert('추가: 달성률 수식', sh11.formulaAt(14, 4).indexOf('COUNTIF') >= 0, sh11.formulaAt(14, 4));
+  var dup = false;
+  try { addMember_('26년 11월', '신규 참가자', 'x', 5); } catch (e) { dup = true; }
+  assert('추가: 같은 이름은 거부', dup);
+
+  /* ---------- 6. 다음 달 이월 미리보기 ---------- */
+  var pv = rolloverPreview_('26년 11월');
+  assert('미리보기: 다음 달 이름', pv.targetTitle === '26년 12월', pv.targetTitle);
+  assert('미리보기: 12월 주차 4개', pv.weeks === 4, 'weeks=' + pv.weeks);
+  assert('미리보기: 12월 기간', pv.period === '기간 (12/1 ~ 12/27)', pv.period);
+  assert('미리보기: 연장 인원만', pv.members.length === 2, JSON.stringify(pv.members.map(function (m) { return m.name; })));
+  assert('미리보기: 총 목표는 주차 수 이내', pv.members.every(function (m) { return m.total <= 4; }), JSON.stringify(pv.members));
+
+  /* ---------- 7. 이월 실행 ---------- */
+  var rv = rollover_('26년 11월', 'yes');
+  var sh12 = ss.getSheetByName('26년 12월');
+  assert('이월: 새 탭 생성', !!sh12 && rv.created === true);
+  assert('이월: 2명 기록', rv.added.length === 2, JSON.stringify(rv.added));
+  assert('이월: 헤더 12월 총 목표', String(sh12.valueAt(2, 3)) === '12월 총 목표', sh12.valueAt(2, 3));
+  assert('이월: 주차 헤더 4개', sh12.valueAt(2, 5) === '1주' && sh12.valueAt(2, 8) === '4주' && sh12.valueAt(2, 9) === '연장여부', [sh12.valueAt(2, 5), sh12.valueAt(2, 8), sh12.valueAt(2, 9)]);
+  assert('이월: 기간 문구', String(sh12.valueAt(1, 5)).indexOf('12/1') > 0, sh12.valueAt(1, 5));
+  assert('이월: 첫 참가자', rv.members[0] && rv.members[0].name === '이홍규', rv.members[0] && rv.members[0].name);
+  assert('이월: 체크 초기화', rv.members[0].checks.every(function (x) { return x === false; }));
+  assert('이월: 연장여부 초기화', rv.members[0].renew === false);
+  assert('이월: 월 목록에 12월 추가', rv.months[0] === '26년 12월', rv.months.join(','));
+  assert('이월: 지난 달 데이터 보존', sh11.valueAt(3, 1) === '이홍규' && sh11.valueAt(3, 5) === true);
+
+  var again = rollover_('26년 11월', 'yes');
+  assert('이월: 두 번 실행해도 중복 없음', again.added.length === 0, JSON.stringify(again.added));
+
+  /* ---------- 8. 웹앱 라우팅 ---------- */
+  var ping = doGet({ parameter: { action: 'ping', callback: 'cb_x' } });
+  var body = ping.getContent();
+  assert('JSONP: callback 으로 감싼다', body.indexOf('cb_x(') === 0 && ping.getMimeType() === 'application/javascript', body.slice(0, 60));
+  var bad = doGet({ parameter: { action: 'nope' } });
+  assert('알 수 없는 action 은 ok:false', JSON.parse(bad.getContent()).ok === false);
+  var inj = doGet({ parameter: { action: 'ping', callback: 'alert(1);x' } });
+  assert('JSONP: 위험한 callback 은 JSON 으로', inj.getContent().charAt(0) === '{' && inj.getMimeType() === 'application/json');
+
+  /* ---------- 출력 ---------- */
+  var pass = results.filter(function (r) { return r.pass; }).length;
+  document.getElementById('sum').innerHTML =
+    '<span class="' + (pass === results.length ? 'ok' : 'ng') + '">' + pass + ' / ' + results.length + ' 통과</span>';
+  var out = document.getElementById('out');
+  results.forEach(function (r) {
+    var li = document.createElement('li');
+    li.innerHTML = '<span class="' + (r.pass ? 'ok' : 'ng') + '">' + (r.pass ? '통과' : '실패') + '</span> ' + r.name +
+      (r.pass ? '' : '<div>' + String(r.detail) + '</div>');
+    out.appendChild(li);
+  });
+  window.__RESULTS__ = results;
+})().catch(function (e) {
+  document.getElementById('sum').textContent = '오류: ' + e.message;
+  document.getElementById('detail').textContent = String(e.stack || e);
+});
+</script>
+</body>
+</html>

@@ -106,7 +106,7 @@ a{color:var(--brand);text-decoration:none}
 .stat{background:var(--bg);border-radius:12px;padding:8px 10px}
 .stat strong{display:block;font-size:17px;letter-spacing:-.02em}
 .stat span{font-size:11px;color:var(--ink-3)}
-.stat-wide{grid-column:1 / -1;display:flex;align-items:baseline;gap:6px}
+.stat-wide{grid-column:auto;display:block}
 .stat-wide strong{font-size:12px;color:var(--ink-2);font-weight:600}
 
 /* 그래프 */
@@ -246,5 +246,5 @@ a{color:var(--brand);text-decoration:none}
 @media (min-width:560px){
   .month-strip{margin:0 0 12px;padding:0}
   .summary-stats{grid-template-columns:1fr 1fr}
-  .stat-wide{flex-direction:row;align-items:baseline}
+  .stat-wide{display:block}
 }

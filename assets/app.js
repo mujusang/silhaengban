@@ -235,8 +235,8 @@
     $('sumChecks').textContent = checks + '/' + goals;
     $('sumRenew').textContent = renew;
     var wi = currentWeekIndex();
-    $('sumWeekSub').textContent = wi ? wi + '주차 진행 중' : '이번 달 진행';
-    $('sumWeek').textContent = '이번 주';
+    $('sumWeekSub').textContent = wi ? '이번 주' : '이번 달';
+    $('sumWeek').textContent = wi ? wi + '주차' : state.month.replace(/\s/g, '').replace('년', '.').replace('월', '');
     $('listCount').textContent = ms.length;
     $('sheetLabel').textContent = mode === 'live' ? '연결된 시트' : '26년 11월 자체 실행반';
     $('infoSheet').textContent = mode === 'live' ? '연결됨' : '26년 11월 자체 실행반';
@@ -464,7 +464,7 @@
       var p = parseMonthTitle(target);
       var weeks = p ? countSundays(p.year, p.month) : state.weeks;
       var carried = state.members.filter(function (m) { return m.renew; }).map(function (m) {
-        return { row: null, name: m.name, goal: m.goal, total: m.total || weeks, rate: 0,
+        return { row: null, name: m.name, goal: m.goal, total: Math.min(m.total || weeks, weeks), rate: 0,
           checks: new Array(weeks).fill(false), renew: false };
       });
       getDemo();
