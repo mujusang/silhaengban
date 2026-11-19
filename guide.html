@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#12213f">
 <title>자체 실행반 — 설치 가이드</title>
-<link rel="stylesheet" href="assets/app.css?v=20261119c">
+<link rel="stylesheet" href="assets/app.css?v=20261119d">
 <style>
   .wrap{max-width:720px;margin:0 auto;padding:18px 16px 60px}
   .step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);margin-bottom:12px}
@@ -41,6 +41,7 @@
     <h2><span class="no">1</span>시트에서 Apps Script 열기</h2>
     <p>구글 시트 <b>26년 11월 자체 실행반</b>을 열고, 메뉴에서 <code>확장 프로그램 → Apps Script</code>를 누릅니다.</p>
     <p>편집기가 열리면 왼쪽 <code>Code.gs</code> 안의 기본 내용을 모두 지웁니다.</p>
+    <div class="note"><b>구글 계정을 확인하세요.</b> 브라우저에 계정이 여러 개 로그인돼 있으면 Apps Script가 다른 계정으로 열릴 수 있습니다(예: 아미타TV 계정). 반드시 <b>그 시트를 열 수 있는 계정</b>으로 열어야 합니다. 처음 한 번만 확인하면 됩니다.</div>
   </div>
 
   <div class="step">
@@ -84,7 +85,12 @@
       <tr><td>참여자 추가</td><td>맨 아래에 새 행을 만들고 달성률 수식·체크박스를 붙입니다.</td></tr>
       <tr><td>다음 달 이월</td><td>연장여부가 켜진 사람만 <b>26년 12월</b> 탭으로 옮깁니다. 그 달 탭이 없으면 새로 만들고, 지난 달 데이터는 그대로 둡니다.</td></tr>
     </table>
-    <div class="note">이미 있는 셀의 값과 수식은 덮어쓰지 않습니다. 쓰기는 앱이 실제로 누른 그 칸에만 일어납니다.</div>
+    <div class="note">이미 있는 셀의 값과 수식은 덮어쓰지 않습니다. 이월은 새 달 탭을 새로 만들고, 지난 달 탭은 손대지 않습니다.</div>
+  </div>
+
+  <div class="step">
+    <h2>먼저 연습해 보기 (선택)</h2>
+    <p>원본에 바로 붙이기 전에 확인하고 싶으면, 원장님 드라이브의 <b>자체 실행반 테스트용</b> 시트에서 같은 순서로 해 보세요. 앱 ⚙설정에 그 웹앱 URL을 넣으면 연습용 시트로 동작합니다. 연습이 끝나면 설정에서 URL만 원본 시트 것으로 바꾸면 됩니다.</p>
   </div>
 
   <div class="step">
